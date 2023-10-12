@@ -1,6 +1,6 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:todo/models/task_model.dart';
+import 'package:todo/shared/firebase/firebase_function.dart';
 import 'package:todo/styles/colors.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
@@ -13,7 +13,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
   var descriptioncontroller = TextEditingController();
 
-  var selecteddate=DateTime.now();
+  var selecteddate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +24,13 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Add new Task", textAlign: TextAlign.center,
+            "Add new Task",
+            textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           TextFormField(
             controller: tittlecontroller,
             decoration: InputDecoration(
@@ -38,19 +40,15 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                      color: primarycolor
-                  )
-              ),
+                  borderSide: BorderSide(color: primarycolor)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                      color: primarycolor
-                  )
-              ),
+                  borderSide: BorderSide(color: primarycolor)),
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           TextFormField(
             controller: descriptioncontroller,
             decoration: InputDecoration(
@@ -60,35 +58,45 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                      color: primarycolor
-                  )
-              ),
+                  borderSide: BorderSide(color: primarycolor)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                      color: primarycolor
-                  )
-              ),
+                  borderSide: BorderSide(color: primarycolor)),
             ),
           ),
-          SizedBox(height: 10,),
-          Text("Select Date",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "Select Date",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          SizedBox(
+            height: 10,
+          ),
           InkWell(
               onTap: () {
                 SelectDate(context);
               },
-              child: Text(selecteddate.toString().substring(0,10), textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.blue,
+              child: Text(
+                selecteddate.toString().substring(0, 10),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.blue,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18),)),
-          SizedBox(height: 20,),
+                    fontSize: 18),
+              )),
+          SizedBox(
+            height: 20,
+          ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: ElevatedButton(onPressed: () {
+              TaskModel taskModel = TaskModel(title: tittlecontroller.text,
+                  Description: descriptioncontroller.text,
+                  date:selecteddate.microsecondsSinceEpoch);
 
+              FirebaseFunction.addTask(taskModel);
             }, child: Text("Add Task")),
           )
         ],
@@ -96,28 +104,26 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  SelectDate(BuildContext context)async {
- DateTime? chosendate=  await showDatePicker(context: context,
+  SelectDate(BuildContext context) async {
+    DateTime? chosendate = await showDatePicker(
+        context: context,
         builder: (context, child) {
-          return Theme(data:Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: primarycolor,
-              onPrimary: Colors.white54,
-              onSurface: Colors.black45,
-
-
-            )
-          ) , child: child!);
+          return Theme(
+              data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: primarycolor,
+                    onPrimary: Colors.white54,
+                    onSurface: Colors.black45,
+                  )),
+              child: child!);
         },
         initialDate: DateTime.now(),
         firstDate: DateTime.now(),
-        lastDate:DateTime.now().add(Duration(days: 365)));
-if(chosendate==null){
-  return;
-}
-selecteddate=chosendate;
-setState(() {
-
-});
+        lastDate: DateTime.now().add(Duration(days: 365)));
+    if (chosendate == null) {
+      return;
+    }
+    selecteddate = chosendate;
+    setState(() {});
   }
 }
