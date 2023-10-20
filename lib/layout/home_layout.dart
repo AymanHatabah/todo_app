@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo/models/user_model.dart';
 import 'package:todo/screens/settings/settings_tab.dart';
 import 'package:todo/screens/tasks/tasks_tab.dart';
 
@@ -17,10 +18,12 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   @override
   Widget build(BuildContext context) {
+   var user=ModalRoute.of(context)?.settings.arguments as UserModel;
+
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
-        title: Text("To Do List "),
+        title: Text("To Do ${user.name} "),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(

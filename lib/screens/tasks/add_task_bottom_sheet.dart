@@ -14,92 +14,118 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   var descriptioncontroller = TextEditingController();
 
   var selecteddate = DateTime.now();
+  var formky = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(18.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "Add new Task",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          TextFormField(
-            controller: tittlecontroller,
-            decoration: InputDecoration(
-              label: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("enter your task"),
-              ),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: primarycolor)),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: primarycolor)),
+      child: Form(
+        key: formky,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Add new Task",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          TextFormField(
-            controller: descriptioncontroller,
-            decoration: InputDecoration(
-              label: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Task description"),
-              ),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: primarycolor)),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: primarycolor)),
+            SizedBox(
+              height: 20,
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            "Select Date",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-              onTap: () {
-                SelectDate(context);
+            TextFormField(
+              controller: tittlecontroller,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "please enter task title";
+                }
+                return null;
               },
-              child: Text(
-                selecteddate.toString().substring(0, 10),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),
-              )),
-          SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: ElevatedButton(onPressed: () {
-              TaskModel taskModel = TaskModel(title: tittlecontroller.text,
-                  Description: descriptioncontroller.text,
-                  date:selecteddate.microsecondsSinceEpoch);
+              decoration: InputDecoration(
+                label: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("enter your task"),
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primarycolor)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primarycolor)),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: descriptioncontroller,
+              validator: (value) {
+                if (value== null || value.isEmpty) {
+                  return "please enter task title";
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                label: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Task description"),
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primarycolor)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primarycolor)),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              "Select Date",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            InkWell(
+                onTap: () {
+                  SelectDate(context);
+                },
+                child: Text(
+                  selecteddate.toString().substring(0, 10),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                )),
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: ElevatedButton(
+                  onPressed: () {
+                    if(formky.currentState!.validate()){
+                      TaskModel taskModel = TaskModel(
+                          title: tittlecontroller.text,
+                          Description: descriptioncontroller.text,
+                          date:DateUtils.dateOnly(selecteddate).millisecondsSinceEpoch);
 
-              FirebaseFunction.addTask(taskModel);
-            }, child: Text("Add Task")),
-          )
-        ],
+                      FirebaseFunction.addTask(taskModel).then((value) {
+                        Navigator.pop(context);
+                      });
+
+                    }
+
+                  },
+                  child: Text("Add Task")
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -111,10 +137,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           return Theme(
               data: Theme.of(context).copyWith(
                   colorScheme: ColorScheme.light(
-                    primary: primarycolor,
-                    onPrimary: Colors.white54,
-                    onSurface: Colors.black45,
-                  )),
+                primary: primarycolor,
+                onPrimary: Colors.white54,
+                onSurface: Colors.black45,
+              )),
               child: child!);
         },
         initialDate: DateTime.now(),

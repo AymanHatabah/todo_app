@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/layout/home_layout.dart';
+import 'package:todo/provider/my_provider.dart';
+import 'package:todo/screens/login/login_screen.dart';
 import 'package:todo/styles/MyThemeData.dart';
 
 import 'firebase_options.dart';
@@ -10,6 +14,7 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const MyApp());
 }
 
@@ -22,9 +27,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
      debugShowCheckedModeBanner: false,
       theme: MyThemeData.lightTheme,
-      initialRoute:HomeLayout.routeName ,
+      initialRoute:LoginScreen.routename ,
       routes: {
-       HomeLayout.routeName:(context) => HomeLayout()
+       HomeLayout.routeName:(context) => HomeLayout(),
+        LoginScreen.routename:(context) => LoginScreen()
 
       },
 
