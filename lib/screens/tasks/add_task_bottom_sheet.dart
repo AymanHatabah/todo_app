@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/task_model.dart';
 import 'package:todo/shared/firebase/firebase_function.dart';
@@ -110,6 +111,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   onPressed: () {
                     if(formky.currentState!.validate()){
                       TaskModel taskModel = TaskModel(
+                        userid:FirebaseAuth.instance.currentUser!.uid,
                           title: tittlecontroller.text,
                           Description: descriptioncontroller.text,
                           date:DateUtils.dateOnly(selecteddate).millisecondsSinceEpoch);

@@ -9,13 +9,14 @@ import 'package:todo/styles/MyThemeData.dart';
 
 import 'firebase_options.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => MyProvider(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -24,17 +25,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<MyProvider>(context);
     return MaterialApp(
-     debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       theme: MyThemeData.lightTheme,
-      initialRoute:LoginScreen.routename ,
+      initialRoute: provider.firebaseUser != null
+          ? HomeLayout.routeName
+          : LoginScreen.routename,
       routes: {
-       HomeLayout.routeName:(context) => HomeLayout(),
-        LoginScreen.routename:(context) => LoginScreen()
-
+        HomeLayout.routeName: (context) => HomeLayout(),
+        LoginScreen.routename: (context) => LoginScreen()
       },
-
     );
   }
 }
-
