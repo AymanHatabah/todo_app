@@ -22,6 +22,7 @@ class FirebaseFunction {
 
   static Stream<QuerySnapshot<TaskModel>> GetTask(DateTime datetime) {
     return getTaskCollection()
+        .where("userid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .where("date",
         isEqualTo: DateUtils
             .dateOnly(datetime)
@@ -45,7 +46,7 @@ class FirebaseFunction {
   }
 
   static Future<void> createuser(String email, String password,
-      Function onSuccess, Function onError,String name,int age) async {
+      Function onSuccess, Function onError, String name, int age) async {
     try {
       final credential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -56,10 +57,10 @@ class FirebaseFunction {
         UserModel user = UserModel(
             id: credential.user!.uid, email: email, name: name, age: age);
 
-        addUsertoFirestore(user).then((value){
+        addUsertoFirestore(user).then((value) {
+          credential.user!.sendEmailVerification();
           onSuccess();
         });
-
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -74,20 +75,7 @@ class FirebaseFunction {
     }
   }
 
-  static Future<void> Login(String email, String password, Function onSuccess,
-      Function onError) async {
-    try {
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      if (credential.user?.uid != null) {
-        
-        var user=await readUserFromFirestore(credential.user!.uid);
-        onSuccess(user);
-      }
-    } on FirebaseAuthException catch (e) {
-      onError("Wrong mail or password");
-    }
-  }
+
 
   static Future<void> addUsertoFirestore(UserModel userModel) {
     var collection = getUserCollection();
@@ -108,12 +96,9 @@ class FirebaseFunction {
       },
     );
   }
- static Future<UserModel?> readUserFromFirestore(String id)
-  async{
-    DocumentSnapshot<UserModel> doc=await
-    getUserCollection().doc(id).get();
+
+  static Future<UserModel?> readUserFromFirestore(String id) async {
+    DocumentSnapshot<UserModel> doc = await getUserCollection().doc(id).get();
     return doc.data();
-
   }
-
 }

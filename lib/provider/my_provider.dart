@@ -17,6 +17,7 @@ if(firebaseUser!=null){
 
   }
   initUser()async{
+    firebaseUser=FirebaseAuth.instance.currentUser;
     userModel=await FirebaseFunction.readUserFromFirestore(firebaseUser!.uid);
     notifyListeners();
   }
